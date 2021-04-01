@@ -25,6 +25,23 @@ defmodule PentoWeb.PromoLive do
      |> assign(:changeset, changeset)}
   end
 
+  def handle_event("save", %{"recipient" => recipient_params}, socket) do
+    send_promo(socket, recipient_params)
+  end
+
+  defp send_promo(socket, recipient_params) do
+    case Promo.send_promo(socket.assigns.recipient, recipient_params) do
+      {:ok, _email} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Promo code sent")
+         |> push_redirect(to: Routes.product_index_path(socket, :index))}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :changeset, changeset)}
+    end
+  end
+
   defp assign_recipient(socket) do
     socket
     |> assign(:recipient, %Recipient{})

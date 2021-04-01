@@ -5,7 +5,12 @@ defmodule Pento.Promo do
     Recipient.changeset(recipient, attrs)
   end
 
-  def send_promo(recipient, attrs) do
-    # Send email
+  def send_promo(%Recipient{} = recipient, attrs) do
+    changeset = Recipient.changeset(recipient, attrs)
+
+    case changeset.valid? do
+      true -> {:ok, "some email"}
+      _ -> {:error, changeset}
+    end
   end
 end
